@@ -360,8 +360,15 @@ class SteamUser(SteamObject):
 
     @cached_property(ttl=1 * HOUR)
     def game_time(self):
+        """
+        return the game time of a user
+        """
         response = APIConnection().call("IPlayerService", "GetOwnedGames", "v0001", steamid=self.steamid,
                                         relationship="friend")
+        if 'game_count' not in response:
+            # Private profiles will cause a special response, where the API doesn't tell us if there are
+            # any results *at all*. We just get a blank JSON document.
+            raise AccessException()
         return response.games
 
         
