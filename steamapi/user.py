@@ -358,6 +358,13 @@ class SteamUser(SteamObject):
                 id_player_map[player_summary.steamid]._cache["_summary"] = (player_summary, now)
         return friends_list
 
+    @cached_property(ttl=1 * HOUR)
+    def game_time(self):
+        response = APIConnection().call("IPlayerService", "GetOwnedGames", "v0001", steamid=self.steamid,
+                                        relationship="friend")
+        return response.games
+
+        
     @property  # Already cached by "_badges".
     def level(self):
         """
