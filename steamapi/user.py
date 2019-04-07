@@ -369,7 +369,10 @@ class SteamUser(SteamObject):
             # Private profiles will cause a special response, where the API doesn't tell us if there are
             # any results *at all*. We just get a blank JSON document.
             raise AccessException()
-        return response.games
+        if response.game_count == 0:
+            return []
+        games = [(game.appid, game.playtime_forever) for game in response.games]
+        return games
 
         
     @property  # Already cached by "_badges".
